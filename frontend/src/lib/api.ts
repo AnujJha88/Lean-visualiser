@@ -2,7 +2,9 @@
 
 import type { AnalyzeResponse } from './types';
 
-const API_BASE = '/api';
+// Use environment variable for API URL if set (production), otherwise default to relative (proxy)
+const BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE = `${BASE_URL}/api`;
 
 export async function analyzeProof(code: string): Promise<AnalyzeResponse> {
     const response = await fetch(`${API_BASE}/proof/analyze`, {
@@ -22,7 +24,7 @@ export async function analyzeProof(code: string): Promise<AnalyzeResponse> {
 
 export async function healthCheck(): Promise<boolean> {
     try {
-        const response = await fetch('/health');
+        const response = await fetch(`${BASE_URL}/health`);
         return response.ok;
     } catch {
         return false;
