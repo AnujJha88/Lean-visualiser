@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
-from typing import Any
+from typing import Any, Union
 from pydantic import field_validator
 
 class Settings(BaseSettings):
@@ -10,13 +10,22 @@ class Settings(BaseSettings):
     lean4web_url: str = "https://live.lean-lang.org"
     
     # CORS
-    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173", "*"]
+    # Allow string (for comma-separated env vars) or list
+    cors_origins: Union[str, list[str]] = ["http://localhost:5173", "http://127.0.0.1:5173", "*"]
     
-    @field_validator("cors_origins", mode="before")
+    @field_validator("cors_origins", mode="after")
     @classmethod
-    def parse_cors_origins(cls, v: Any) -> Any:
-        if isinstance(v, str) and not v.startswith("["):
-            return [origin.strip() for origin in v.split(",")]
+    def parse_cors_origins(cls, v: Any) -> list[str]:
+        if isinstance(v, str):
+            # If it looks like JSON list, try to parse it
+            if v.strip().startswith("["):
+                import json
+                try:
+                    return json.loads(v)
+                except:
+                    pass
+            # Otherwise treat as comma-separated string
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
         return v
     
     # App
