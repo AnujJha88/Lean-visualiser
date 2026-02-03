@@ -115,13 +115,15 @@
               >
               <button
                 class="example-btn"
-                on:click={() => loadExample("induction")}>INDUCTION</button
+                on:click={() => loadExample("logicChain")}>LOGIC_CHAIN</button
               >
-              <button class="example-btn" on:click={() => loadExample("calc")}
-                >CALC</button
+              <button
+                class="example-btn"
+                on:click={() => loadExample("algebrav")}>ALGEBRA</button
               >
-              <button class="example-btn" on:click={() => loadExample("prime")}
-                >PRIME</button
+              <button
+                class="example-btn"
+                on:click={() => loadExample("distrib")}>DISTRIB</button
               >
             </div>
           </div>
