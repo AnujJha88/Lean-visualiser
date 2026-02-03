@@ -13,4 +13,6 @@ services:
         value: 3.11.0
       - key: LEAN4WEB_URL
         value: https://live.lean-lang.org
+      - key: CORS_ORIGINS
+        value: "*"
     autoDeploy: true
