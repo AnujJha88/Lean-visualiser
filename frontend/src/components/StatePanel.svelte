@@ -3,6 +3,7 @@
 
     export let state: ProofState | null = null;
     export let diff: StateDiff | null = null;
+    export let explanation: string = "";
     export let title: string = "Proof State";
 </script>
 
@@ -12,6 +13,13 @@
         <div class="diff-header">
             <span class="diff-icon">ℹ</span>
             <span class="diff-text">{diff.description}</span>
+        </div>
+    {/if}
+
+    {#if explanation}
+        <div class="explanation-box">
+            <span class="exp-icon">➜</span>
+            <span class="exp-text">{explanation}</span>
         </div>
     {/if}
 
@@ -126,9 +134,28 @@
     .diff-icon {
         font-weight: bold;
     }
+
     .diff-text {
         text-transform: uppercase;
         letter-spacing: 0.5px;
+    }
+
+    .explanation-box {
+        background: rgba(255, 255, 255, 0.03);
+        border-left: 3px solid #666;
+        padding: 12px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        color: #fff;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-style: italic;
+    }
+
+    .explanation-box .exp-icon {
+        color: #666;
+        font-weight: bold;
     }
 
     .section {

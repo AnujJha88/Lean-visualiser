@@ -33,6 +33,7 @@ export interface TacticStep {
     state_before: ProofState;
     state_after: ProofState;
     diff: StateDiff;
+    explanation: string;
 }
 
 export interface ProofTimeline {

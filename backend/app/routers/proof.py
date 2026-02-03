@@ -21,6 +21,7 @@ from ..services import (
     extract_tactic_positions,
     compute_diff,
     parse_goal_state,
+    explain_tactic,
 )
 
 
@@ -102,6 +103,8 @@ async def analyze_proof(request: AnalyzeRequest):
             # Compute diff
             diff = compute_diff(state_before, state_after)
             
+            explanation = explain_tactic(pos.tactic)
+            
             steps.append(TacticStep(
                 index=i,
                 tactic=pos.tactic,
@@ -109,7 +112,8 @@ async def analyze_proof(request: AnalyzeRequest):
                 column=pos.column,
                 state_before=state_before,
                 state_after=state_after,
-                diff=diff
+                diff=diff,
+                explanation=explanation
             ))
             
             current_state = state_after

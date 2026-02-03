@@ -39,6 +39,7 @@ class TacticStep(BaseModel):
     state_before: ProofState
     state_after: ProofState
     diff: StateDiff
+    explanation: str = ""
 
 
 class ProofTimeline(BaseModel):

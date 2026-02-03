@@ -182,6 +182,7 @@
         <StatePanel
           state={stateToShow}
           diff={diffToShow}
+          explanation={currentStep?.explanation}
           title={currentStep ? `After: ${currentStep.tactic}` : "Proof State"}
         />
       </div>
