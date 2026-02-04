@@ -3,6 +3,7 @@
     import * as d3 from "d3";
     import { buildProofGraph, type GraphNode } from "../lib/graph";
     import type { ProofTimeline } from "../lib/types";
+    import { soundManager } from "../lib/sound";
 
     export let timeline: ProofTimeline | null = null;
     export let currentStepIndex: number = 0;
@@ -99,8 +100,10 @@
             .on("click", (event: any, d: any) => {
                 if (d.data.stepIndex !== undefined) {
                     dispatch("select", d.data.stepIndex);
+                    // Click sound handled by parent, but we can do a different one here or rely on prop update
                 }
-            });
+            })
+            .on("mouseenter", () => soundManager.playHover());
 
         // Node Circles/Rects
         nodes

@@ -8,6 +8,8 @@
 
   import ProofGraph from "./components/ProofGraph.svelte";
   import ExampleSelector from "./components/ExampleSelector.svelte";
+  import Broplainer from "./components/Broplainer.svelte";
+  import { soundManager } from "./lib/sound";
 
   let code = defaultCode;
   let timeline: ProofTimeline | null = null;
@@ -41,6 +43,9 @@
         timeline = result.timeline;
         if (timeline.error) {
           error = timeline.error;
+          soundManager.playError();
+        } else if (timeline.success) {
+          soundManager.playSuccess();
         }
       }
     } catch (e) {
@@ -59,6 +64,7 @@
     if (currentStep) {
       editorComponent?.highlightLine(currentStep.line);
     }
+    soundManager.playClick();
   }
 
   function handlePlay() {
@@ -234,6 +240,9 @@
           explanation={currentStep?.explanation}
           title={currentStep ? `After: ${currentStep.tactic}` : "Proof State"}
         />
+        {#if currentStep}
+          <Broplainer tactic={currentStep.tactic} />
+        {/if}
       </div>
     </main>
 
