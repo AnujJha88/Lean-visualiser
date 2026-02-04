@@ -13,6 +13,8 @@
   let isPlaying = false;
   let error: string | null = null;
   let playInterval: ReturnType<typeof setInterval> | null = null;
+  let fileInput: HTMLInputElement;
+  let isLightMode = false;
 
   let editorComponent: Editor;
 
@@ -83,6 +85,39 @@
     error = null;
     currentStepIndex = 0;
   }
+
+  function handleImportClick() {
+    fileInput.click();
+  }
+
+  function handleFileSelect(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          code = e.target.result as string;
+          editorComponent?.setValue(code);
+          timeline = null; // Reset timeline on new file
+          error = null;
+        }
+      };
+      reader.readAsText(file);
+    }
+    // Reset value so same file can be selected again
+    input.value = "";
+    input.value = "";
+  }
+
+  function toggleTheme() {
+    isLightMode = !isLightMode;
+    if (isLightMode) {
+      document.body.classList.add("light-mode");
+    } else {
+      document.body.classList.remove("light-mode");
+    }
+  }
 </script>
 
 <div class="app-container">
@@ -107,6 +142,25 @@
         </div>
 
         <div class="actions">
+          <button
+            class="theme-toggle"
+            on:click={toggleTheme}
+            title="Toggle Theme"
+          >
+            {isLightMode ? "☀" : "☾"}
+          </button>
+
+          <input
+            type="file"
+            accept=".lean,.lean4"
+            style="display: none;"
+            bind:this={fileInput}
+            on:change={handleFileSelect}
+          />
+          <button class="action-btn" on:click={handleImportClick}>
+            <span class="icon">⏏</span> IMPORT
+          </button>
+
           <div class="examples-dropdown">
             <span class="dropdown-label">SYSTEM_LOAD:</span>
             <div class="button-group">
@@ -160,6 +214,7 @@
             bind:this={editorComponent}
             value={code}
             on:change={handleCodeChange}
+            theme={isLightMode ? "light" : "dark"}
           />
         </div>
       </div>
@@ -231,8 +286,8 @@
 
   :global(body) {
     font-family: "JetBrains Mono", monospace;
-    background: #000;
-    color: #e0e0e0;
+    background: var(--bg-app);
+    color: var(--text-primary);
     min-height: 100vh;
     overflow: hidden;
   }
@@ -246,12 +301,12 @@
     height: 100%;
     background: linear-gradient(
       rgba(18, 16, 16, 0) 50%,
-      rgba(0, 0, 0, 0.1) 50%
+      var(--crt-scanline) 50%
     );
     background-size: 100% 4px;
     pointer-events: none;
     z-index: 1000;
-    opacity: 0.6;
+    opacity: var(--crt-opacity);
   }
 
   .grid-background {
@@ -260,11 +315,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: linear-gradient(
-        rgba(0, 240, 255, 0.03) 1px,
-        transparent 1px
-      ),
-      linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: -1;
@@ -272,7 +324,7 @@
 
   .app-container {
     height: 100vh;
-    background: radial-gradient(circle at center, #0a0a14 0%, #000 100%);
+    background: var(--bg-app);
   }
 
   .app {
@@ -285,8 +337,8 @@
 
   /* Header */
   .header {
-    background: rgba(5, 5, 10, 0.9);
-    border-bottom: 1px solid #222;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
     padding: 0 24px;
     height: 70px;
     flex-shrink: 0;
@@ -302,7 +354,12 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, #00f0ff, transparent 50%, #ff003c);
+    background: linear-gradient(
+      90deg,
+      var(--accent-color),
+      transparent 50%,
+      var(--accent-secondary)
+    );
     box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
   }
 
@@ -324,7 +381,7 @@
   .logo-box {
     width: 36px;
     height: 36px;
-    border: 1px solid #ff003c;
+    border: 1px solid var(--accent-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -333,22 +390,22 @@
   }
 
   .logo {
-    color: #ff003c;
+    color: var(--accent-secondary);
     font-size: 20px;
-    text-shadow: 0 0 5px #ff003c;
+    text-shadow: 0 0 5px var(--accent-secondary);
   }
 
   .title-group h1 {
     font-size: 18px;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-primary);
     letter-spacing: 2px;
     line-height: 1;
   }
 
   .subtitle {
     font-size: 9px;
-    color: #00f0ff;
+    color: var(--accent-color);
     letter-spacing: 3px;
     margin-top: 2px;
   }
@@ -356,7 +413,7 @@
   .version {
     font-size: 10px;
     color: #000;
-    background: #00f0ff;
+    background: var(--accent-color);
     padding: 2px 6px;
     font-weight: bold;
     box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
@@ -366,7 +423,26 @@
   .actions {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 20px;
+  }
+
+  .theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
   }
 
   .examples-dropdown {
@@ -377,7 +453,7 @@
 
   .dropdown-label {
     font-size: 10px;
-    color: #555;
+    color: var(--text-muted);
     letter-spacing: 1px;
     font-weight: bold;
   }
@@ -405,14 +481,14 @@
 
   .example-btn:hover {
     background: #222;
-    color: #00f0ff;
+    color: var(--accent-color);
     text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
   }
 
   .analyze-btn {
     background: transparent;
-    border: 1px solid #00f0ff;
-    color: #00f0ff;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
     padding: 0 24px;
     height: 40px;
     font-size: 12px;
@@ -435,8 +511,8 @@
   }
 
   .analyze-btn:disabled {
-    border-color: #333;
-    color: #555;
+    border-color: var(--border-color);
+    color: var(--text-muted);
     cursor: not-allowed;
   }
 
@@ -445,7 +521,7 @@
     bottom: 0;
     left: 0;
     height: 2px;
-    background: #00f0ff;
+    background: var(--accent-color);
     animation: loadingBar 1s infinite linear;
   }
 
@@ -464,13 +540,40 @@
     }
   }
 
+  .action-btn {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    padding: 0 16px;
+    height: 32px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    font-family: inherit;
+    letter-spacing: 1px;
+    margin-right: 16px;
+  }
+
+  .action-btn:hover {
+    background: rgba(0, 240, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+  }
+
+  .action-btn .icon {
+    font-size: 14px;
+  }
+
   /* Main content */
   .main {
     flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2px;
-    background: #222;
+    background: var(--border-color);
     min-height: 0;
     padding: 2px;
   }
@@ -479,7 +582,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    background: rgba(5, 5, 10, 0.95);
+    background: var(--bg-panel);
     position: relative;
   }
 
@@ -499,8 +602,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 20px;
-    border-bottom: 1px solid #222;
-    background: #080810;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.2);
   }
 
   .panel-title {
@@ -510,7 +613,7 @@
   }
 
   .panel-title .icon {
-    color: #ff003c;
+    color: var(--accent-secondary);
     font-size: 10px;
   }
 
@@ -518,17 +621,17 @@
     font-size: 11px;
     font-weight: bold;
     letter-spacing: 2px;
-    color: #ccc;
+    color: var(--text-secondary);
   }
 
   .panel-deco {
     font-size: 9px;
-    color: #444;
+    color: var(--text-muted);
     letter-spacing: 1px;
   }
 
   .current-tactic {
-    color: #00f0ff;
+    color: var(--accent-color);
     text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
   }
 
@@ -544,8 +647,8 @@
 
   /* Timeline panel */
   .timeline-panel {
-    background: #050510;
-    border-top: 1px solid #222;
+    background: var(--bg-timeline);
+    border-top: 1px solid var(--border-color);
     flex-shrink: 0;
     position: relative;
     z-index: 5;
@@ -556,7 +659,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at center, #0a0a1a 0%, #050510 100%);
+    background: radial-gradient(
+      circle at center,
+      rgba(10, 10, 26, 0.5) 0%,
+      transparent 100%
+    );
   }
 
   .placeholder-content {
@@ -600,7 +707,7 @@
   }
 
   .placeholder-content span {
-    color: #fff;
+    color: var(--text-primary);
     letter-spacing: 4px;
     font-weight: bold;
     font-size: 16px;
@@ -608,7 +715,7 @@
   }
 
   .placeholder-content small {
-    color: #555;
+    color: var(--text-muted);
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -619,9 +726,9 @@
     align-items: center;
     gap: 20px;
     background: rgba(255, 0, 60, 0.05);
-    border-bottom: 2px solid #ff003c;
+    border-bottom: 2px solid var(--accent-secondary);
     padding: 16px 24px;
-    color: #ff003c;
+    color: var(--accent-secondary);
     animation: flashError 0.5s ease-out;
   }
 
@@ -636,7 +743,7 @@
 
   .error-icon {
     font-size: 24px;
-    text-shadow: 0 0 10px #ff003c;
+    text-shadow: 0 0 10px var(--accent-secondary);
   }
 
   .error-content {

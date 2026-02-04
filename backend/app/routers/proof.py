@@ -103,7 +103,7 @@ async def analyze_proof(request: AnalyzeRequest):
             # Compute diff
             diff = compute_diff(state_before, state_after)
             
-            explanation = explain_tactic(pos.tactic)
+            explanation = explain_tactic(pos.tactic, before=state_before, after=state_after)
             
             steps.append(TacticStep(
                 index=i,

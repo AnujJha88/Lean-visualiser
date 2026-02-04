@@ -1,0 +1,46 @@
+/* CSS Variables for Theming */
+:root {
+  /* Default Dark Theme */
+  --bg-app: radial-gradient(circle at center, #0a0a14 0%, #000 100%);
+  --bg-panel: rgba(5, 5, 10, 0.95);
+  --bg-header: rgba(5, 5, 10, 0.9);
+  --bg-timeline: #050510;
+  
+  --text-primary: #e0e0e0;
+  --text-secondary: #ccc;
+  --text-muted: #555;
+  
+  --border-color: #222;
+  --accent-color: #00f0ff;
+  --accent-secondary: #ff003c;
+  
+  --grid-color: rgba(0, 240, 255, 0.03);
+  --crt-scanline: rgba(0, 0, 0, 0.1);
+  --crt-opacity: 0.6;
+}
+
+:global(.light-mode) {
+  /* Light Theme Overrides */
+  --bg-app: radial-gradient(circle at center, #f0f0f5 0%, #e0e0ea 100%);
+  --bg-panel: rgba(255, 255, 255, 0.95);
+  --bg-header: rgba(245, 245, 250, 0.95);
+  --bg-timeline: #fafafa;
+  
+  --text-primary: #1a1a2e;
+  --text-secondary: #333;
+  --text-muted: #888;
+  
+  --border-color: #e0e0e0;
+  --accent-color: #0070f3;
+  --accent-secondary: #d0006f;
+  
+  --grid-color: rgba(0, 0, 0, 0.03);
+  --crt-scanline: rgba(255, 255, 255, 0.1);
+  --crt-opacity: 0.2;
+}
+
+body {
+  background: var(--bg-app);
+  color: var(--text-primary);
+  transition: background 0.3s, color 0.3s;
+}
