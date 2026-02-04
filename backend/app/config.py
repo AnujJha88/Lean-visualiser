@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
-from typing import Any, Union
+from typing import Any, Union, Optional
 from pydantic import field_validator
 
 class Settings(BaseSettings):
@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     
     # App
     debug: bool = True
+    
+    # AI Integration
+    openai_api_key: Optional[str] = None
+    openai_model: str = "gpt-4o-mini"
     
     class Config:
         env_file = ".env"

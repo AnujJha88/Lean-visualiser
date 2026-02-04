@@ -1,8 +1,10 @@
 import re
+import httpx
 from typing import Optional
 from ..models.schemas import ProofState, Hypothesis, Goal
+from ..config import get_settings
 
-def explain_tactic(tactic: str, before: Optional[ProofState] = None, after: Optional[ProofState] = None) -> str:
+async def explain_tactic(tactic: str, before: Optional[ProofState] = None, after: Optional[ProofState] = None) -> str:
     """
     Generate a natural language explanation for a Lean 4 tactic using context.
     
@@ -11,7 +13,20 @@ def explain_tactic(tactic: str, before: Optional[ProofState] = None, after: Opti
         before: The proof state before the tactic.
         after: The proof state after the tactic.
     """
+
     t = tactic.strip()
+    settings = get_settings()
+
+    # Try LLM if Key is present
+    if settings.openai_api_key:
+        try:
+            explanation = await explain_with_llm(t, before, after, settings.openai_api_key, settings.openai_model)
+            if explanation:
+                return explanation
+        except Exception as e:
+            print(f"LLM Explanation failed: {e}")
+            # Fallback to regex
+            pass
     
     # Helper to get goal types
     def get_goal_type(state: Optional[ProofState], index: int = 0) -> str:
@@ -39,24 +54,25 @@ def explain_tactic(tactic: str, before: Optional[ProofState] = None, after: Opti
         return "Introduces variables"
 
     # Rewrites
-    if m := re.match(r'^(?:rw|rewrite)\s*\[(.+)\]', t):
-        rules = m.group(1)
-        if m_at := re.search(r'\s+at\s+(\w+)', t):
-            loc = m_at.group(1)
-            return f"Rewrites hypothesis `{loc}` using {rules}"
+    # Rewrites (Advanced)
+    if m := re.match(r'^(?:rw|rewrite|erw)\s*(?:\[(.*)\])?\s*(.*)', t):
+        rules_str = m.group(1)
+        rest = m.group(2)
         
-        # Check if we can see the change
-        before_goal = get_goal_type(before)
-        after_goal = get_goal_type(after)
-        if before_goal and after_goal and before_goal != after_goal:
-             return f"Rewrites goal using {rules}, changing it from `{before_goal}` to `{after_goal}`"
+        # Parse location
+        loc = "the goal"
+        if m_at := re.search(r'\s+at\s+(\S+)', rest):
+             loc = f"hypothesis `{m_at.group(1)}`"
              
-        return f"Rewrites the goal using {rules}"
-    
-    if m := re.match(r'^(?:rw|rewrite)\s+(.+)', t):
-        # Handle single rewrite
-        rule = m.group(1).split(' at ')[0].strip()
-        return f"Rewrites using {rule}"
+        # Parse rules sequence
+        if rules_str:
+            rules = [r.strip() for r in rules_str.split(',')]
+            desc = " then ".join([f"`{r}`" for r in rules])
+            return f"Rewrites {loc} using {desc}"
+        else:
+             # Handle single rule without brackets if standard regex missed it
+             rule = rest.split(' at ')[0].strip()
+             return f"Rewrites {loc} using `{rule}`"
 
     # Application
     if m := re.match(r'^apply\s+(.+)', t):
@@ -121,9 +137,15 @@ def explain_tactic(tactic: str, before: Optional[ProofState] = None, after: Opti
         return "Calculation step"
         
     # Have / Let
+    # Have / Let / Suffices / Obtain
     if m := re.match(r'^(?:have|let)\s+(\w+)\s*:', t):
-        name = m.group(1)
-        return f"States intermediate result `{name}`"
+        return f"Establishes intermediate fact `{m.group(1)}`"
+    
+    if m := re.match(r'^suffices\s+(.+?)(?:\s+by)?$', t):
+        return f"Claims it suffices to prove `{m.group(1)}` to solve the goal"
+
+    if m := re.match(r'^obtain\s+(.+?)\s*:=\s*', t):
+        return f"Extards witness `{m.group(1)}` from an existential hypothesis"
         
     # Generic fallback with diff
     before_goal = get_goal_type(before)
@@ -132,3 +154,46 @@ def explain_tactic(tactic: str, before: Optional[ProofState] = None, after: Opti
         return f"Executes `{t.split()[0]}`, changing goal to `{after_goal}`"
 
     return f"Executes `{t}`"
+
+
+async def explain_with_llm(tactic: str, before: Optional[ProofState], after: Optional[ProofState], api_key: str, model: str) -> Optional[str]:
+    """Call OpenAI API to explain the tactic."""
+    
+    # Construct context
+    context = f"Tactic: {tactic}\n"
+    if before and before.goals:
+        context += f"Before Goal: {before.goals[0].type}\n"
+    if after and after.goals:
+        context += f"After Goal: {after.goals[0].type}\n"
+        
+    prompt = f"""
+    Explain this Lean 4 tactic step in simple, high-level terms (1 sentence max).
+    Focus on the "Why" and the mathematical intuition. Use "Vibe Coding" slang / casual tone if appropriate but keep it accurate.
+    Do not mention "Lean 4" explicitly.
+    
+    {context}
+    """
+    
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        response = await client.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": "You are a helpful math tutor explaining formal proofs."},
+                    {"role": "user", "content": prompt}
+                ],
+                "max_tokens": 60,
+                "temperature": 0.7
+            }
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            return data["choices"][0]["message"]["content"].strip()
+            
+    return None
