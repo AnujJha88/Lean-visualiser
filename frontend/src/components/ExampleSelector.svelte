@@ -11,7 +11,8 @@
         Basics: ["simple", "logicChain"],
         Algebra: ["algebrav", "distrib"],
         Advanced: ["induction", "cases", "contradiction"],
-        Complex: ["sumAnalysis", "listReverse"],
+        Classics: ["infinitudePrimes", "irrationalSqrt2"],
+        "User Proofs": ["hkTheorem", "janakTheorem"],
     };
 
     function selectExample(key: string) {
