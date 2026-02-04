@@ -5,18 +5,29 @@
   --bg-panel: rgba(5, 5, 10, 0.95);
   --bg-header: rgba(5, 5, 10, 0.9);
   --bg-timeline: #050510;
-  
+
   --text-primary: #e0e0e0;
   --text-secondary: #ccc;
   --text-muted: #555;
-  
+
   --border-color: #222;
   --accent-color: #00f0ff;
   --accent-secondary: #ff003c;
-  
+  --accent-color-rgb: 0, 240, 255;
+  --accent-secondary-rgb: 255, 0, 60;
+
   --grid-color: rgba(0, 240, 255, 0.03);
   --crt-scanline: rgba(0, 0, 0, 0.1);
   --crt-opacity: 0.6;
+
+  --item-bg: rgba(255, 255, 255, 0.02);
+  --item-bg-hover: rgba(255, 255, 255, 0.04);
+  --diff-added-bg: rgba(0, 240, 255, 0.03);
+  --diff-removed-bg: rgba(255, 0, 60, 0.03);
+  --success-bg: rgba(0, 240, 255, 0.05);
+
+  --scrollbar-track: #050510;
+  --scrollbar-thumb: #333;
 }
 
 :global(.light-mode) {
@@ -25,18 +36,29 @@
   --bg-panel: rgba(255, 255, 255, 0.95);
   --bg-header: rgba(245, 245, 250, 0.95);
   --bg-timeline: #fafafa;
-  
+
   --text-primary: #1a1a2e;
   --text-secondary: #333;
   --text-muted: #888;
-  
+
   --border-color: #e0e0e0;
   --accent-color: #0070f3;
   --accent-secondary: #d0006f;
-  
+  --accent-color-rgb: 0, 112, 243;
+  --accent-secondary-rgb: 208, 0, 111;
+
   --grid-color: rgba(0, 0, 0, 0.03);
   --crt-scanline: rgba(255, 255, 255, 0.1);
   --crt-opacity: 0.2;
+
+  --item-bg: rgba(0, 0, 0, 0.03);
+  --item-bg-hover: rgba(0, 0, 0, 0.05);
+  --diff-added-bg: rgba(0, 112, 243, 0.1);
+  --diff-removed-bg: rgba(208, 0, 111, 0.1);
+  --success-bg: rgba(0, 112, 243, 0.1);
+
+  --scrollbar-track: #f0f0f0;
+  --scrollbar-thumb: #ccc;
 }
 
 body {

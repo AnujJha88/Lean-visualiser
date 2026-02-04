@@ -112,6 +112,7 @@
 
   function toggleTheme() {
     isLightMode = !isLightMode;
+    console.log("Toggle Theme:", isLightMode ? "Light" : "Dark");
     if (isLightMode) {
       document.body.classList.add("light-mode");
     } else {
@@ -360,7 +361,7 @@
       transparent 50%,
       var(--accent-secondary)
     );
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    box-shadow: 0 0 10px rgba(var(--accent-color-rgb), 0.5);
   }
 
   .header-content {
@@ -385,8 +386,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 0, 60, 0.1);
-    box-shadow: 0 0 10px rgba(255, 0, 60, 0.2);
+    background: rgba(var(--accent-secondary-rgb), 0.1);
+    box-shadow: 0 0 10px rgba(var(--accent-secondary-rgb), 0.2);
   }
 
   .logo {
@@ -416,7 +417,7 @@
     background: var(--accent-color);
     padding: 2px 6px;
     font-weight: bold;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    box-shadow: 0 0 10px rgba(var(--accent-color-rgb), 0.4);
     transform: skewX(-10deg);
   }
 
@@ -461,15 +462,15 @@
   .button-group {
     display: flex;
     gap: 2px;
-    background: #111;
+    background: var(--bg-panel);
     padding: 2px;
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
   }
 
   .example-btn {
-    background: #0a0a0a;
+    background: var(--bg-app);
     border: none;
-    color: #666;
+    color: var(--text-muted);
     padding: 6px 16px;
     font-size: 10px;
     cursor: pointer;
@@ -480,9 +481,9 @@
   }
 
   .example-btn:hover {
-    background: #222;
+    background: var(--item-bg-hover);
     color: var(--accent-color);
-    text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+    text-shadow: 0 0 5px rgba(var(--accent-color-rgb), 0.5);
   }
 
   .analyze-btn {
@@ -505,9 +506,9 @@
   }
 
   .analyze-btn:hover:not(:disabled) {
-    background: rgba(0, 240, 255, 0.1);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-    text-shadow: 0 0 5px rgba(0, 240, 255, 0.8);
+    background: rgba(var(--accent-color-rgb), 0.1);
+    box-shadow: 0 0 20px rgba(var(--accent-color-rgb), 0.2);
+    text-shadow: 0 0 5px rgba(var(--accent-color-rgb), 0.8);
   }
 
   .analyze-btn:disabled {
@@ -541,7 +542,7 @@
   }
 
   .action-btn {
-    background: rgba(0, 240, 255, 0.1);
+    background: rgba(var(--accent-color-rgb), 0.1);
     border: 1px solid var(--accent-color);
     color: var(--accent-color);
     padding: 0 16px;
@@ -559,8 +560,8 @@
   }
 
   .action-btn:hover {
-    background: rgba(0, 240, 255, 0.2);
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    background: rgba(var(--accent-color-rgb), 0.2);
+    box-shadow: 0 0 10px rgba(var(--accent-color-rgb), 0.2);
   }
 
   .action-btn .icon {
@@ -632,7 +633,7 @@
 
   .current-tactic {
     color: var(--accent-color);
-    text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
+    text-shadow: 0 0 5px rgba(var(--accent-color-rgb), 0.3);
   }
 
   .editor-wrapper {
@@ -661,21 +662,21 @@
     justify-content: center;
     background: radial-gradient(
       circle at center,
-      rgba(10, 10, 26, 0.5) 0%,
+      var(--item-bg-hover) 0%,
       transparent 100%
     );
   }
 
   .placeholder-content {
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
     padding: 30px 60px;
     text-align: center;
     display: flex;
     flex-direction: column;
     gap: 10px;
     position: relative;
-    background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    background: var(--bg-panel);
+    box-shadow: 0 0 20px rgba(var(--accent-color-rgb), 0.1);
   }
 
   .scanner-line {
@@ -684,9 +685,9 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: rgba(0, 240, 255, 0.5);
+    background: rgba(var(--accent-color-rgb), 0.5);
     animation: scan 2s infinite linear;
-    box-shadow: 0 0 10px #00f0ff;
+    box-shadow: 0 0 10px var(--accent-color);
   }
 
   @keyframes scan {
@@ -725,7 +726,7 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    background: rgba(255, 0, 60, 0.05);
+    background: rgba(var(--accent-secondary-rgb), 0.05);
     border-bottom: 2px solid var(--accent-secondary);
     padding: 16px 24px;
     color: var(--accent-secondary);
@@ -734,10 +735,10 @@
 
   @keyframes flashError {
     0% {
-      background: rgba(255, 0, 60, 0.2);
+      background: rgba(var(--accent-secondary-rgb), 0.2);
     }
     100% {
-      background: rgba(255, 0, 60, 0.05);
+      background: rgba(var(--accent-secondary-rgb), 0.05);
     }
   }
 
@@ -762,5 +763,68 @@
   .error-msg {
     font-size: 12px;
     letter-spacing: 1px;
+  }
+
+  /* CSS Variables for Theming - Consolidated */
+  :global(:root) {
+    /* Default Dark Theme */
+    --bg-app: radial-gradient(circle at center, #0a0a14 0%, #000 100%);
+    --bg-panel: rgba(5, 5, 10, 0.95);
+    --bg-header: rgba(5, 5, 10, 0.9);
+    --bg-timeline: #050510;
+
+    --text-primary: #e0e0e0;
+    --text-secondary: #ccc;
+    --text-muted: #555;
+
+    --border-color: #222;
+    --accent-color: #00f0ff;
+    --accent-secondary: #ff003c;
+    --accent-color-rgb: 0, 240, 255;
+    --accent-secondary-rgb: 255, 0, 60;
+
+    --grid-color: rgba(0, 240, 255, 0.03);
+    --crt-scanline: rgba(0, 0, 0, 0.1);
+    --crt-opacity: 0.6;
+
+    --item-bg: rgba(255, 255, 255, 0.02);
+    --item-bg-hover: rgba(255, 255, 255, 0.04);
+    --diff-added-bg: rgba(0, 240, 255, 0.03);
+    --diff-removed-bg: rgba(255, 0, 60, 0.03);
+    --success-bg: rgba(0, 240, 255, 0.05);
+
+    --scrollbar-track: #050510;
+    --scrollbar-thumb: #333;
+  }
+
+  :global(.light-mode) {
+    /* Light Theme Overrides */
+    --bg-app: radial-gradient(circle at center, #f0f0f5 0%, #e0e0ea 100%);
+    --bg-panel: rgba(255, 255, 255, 0.95);
+    --bg-header: rgba(245, 245, 250, 0.95);
+    --bg-timeline: #fafafa;
+
+    --text-primary: #1a1a2e;
+    --text-secondary: #333;
+    --text-muted: #888;
+
+    --border-color: #e0e0e0;
+    --accent-color: #0070f3;
+    --accent-secondary: #d0006f;
+    --accent-color-rgb: 0, 112, 243;
+    --accent-secondary-rgb: 208, 0, 111;
+
+    --grid-color: rgba(0, 0, 0, 0.03);
+    --crt-scanline: rgba(255, 255, 255, 0.1);
+    --crt-opacity: 0.2;
+
+    --item-bg: rgba(0, 0, 0, 0.03);
+    --item-bg-hover: rgba(0, 0, 0, 0.05);
+    --diff-added-bg: rgba(0, 112, 243, 0.1);
+    --diff-removed-bg: rgba(208, 0, 111, 0.1);
+    --success-bg: rgba(0, 112, 243, 0.1);
+
+    --scrollbar-track: #f0f0f0;
+    --scrollbar-thumb: #ccc;
   }
 </style>

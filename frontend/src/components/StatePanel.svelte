@@ -89,14 +89,15 @@
 
 <style>
     .state-panel {
-        background: #050510;
+        background: transparent;
         height: 100%;
         padding: 20px;
         overflow: auto;
         font-family: "JetBrains Mono", monospace;
-        color: #e0e0e0;
+        color: var(--text-primary);
         scrollbar-width: thin;
-        scrollbar-color: #333 #050510;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+        transition: color 0.3s;
     }
 
     .state-panel::-webkit-scrollbar {
@@ -104,21 +105,21 @@
     }
 
     .state-panel::-webkit-scrollbar-thumb {
-        background: #333;
+        background: var(--scrollbar-thumb);
         border-radius: 3px;
     }
 
     .diff-header {
-        background: rgba(0, 240, 255, 0.05);
+        background: var(--success-bg);
         border: 1px solid rgba(0, 240, 255, 0.3);
-        color: #00f0ff;
+        color: var(--accent-color);
         padding: 10px;
         margin-bottom: 24px;
         font-size: 11px;
         display: flex;
         align-items: center;
         gap: 8px;
-        border-left: 3px solid #00f0ff;
+        border-left: 3px solid var(--accent-color);
         animation: flash 1s ease-out;
     }
 
@@ -127,7 +128,7 @@
             background: rgba(0, 240, 255, 0.2);
         }
         100% {
-            background: rgba(0, 240, 255, 0.05);
+            background: var(--success-bg);
         }
     }
 
@@ -141,12 +142,12 @@
     }
 
     .explanation-box {
-        background: rgba(255, 255, 255, 0.03);
-        border-left: 3px solid #666;
+        background: var(--item-bg);
+        border-left: 3px solid var(--text-muted);
         padding: 12px;
         margin-bottom: 24px;
         font-size: 13px;
-        color: #fff;
+        color: var(--text-primary);
         display: flex;
         gap: 10px;
         align-items: center;
@@ -154,7 +155,7 @@
     }
 
     .explanation-box .exp-icon {
-        color: #666;
+        color: var(--text-muted);
         font-weight: bold;
     }
 
@@ -167,7 +168,7 @@
         align-items: center;
         gap: 10px;
         margin-bottom: 16px;
-        border-bottom: 1px solid #222;
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: 8px;
     }
 
@@ -175,22 +176,22 @@
         margin: 0;
         font-size: 11px;
         letter-spacing: 2px;
-        color: #666;
+        color: var(--text-muted);
         font-weight: bold;
     }
 
     .section-header .icon {
-        color: #00f0ff;
+        color: var(--accent-color);
         font-size: 12px;
     }
 
     .section.goals .icon {
-        color: #ff003c;
+        color: var(--accent-secondary);
     }
 
     .count {
         margin-left: auto;
-        color: #444;
+        color: var(--text-muted);
         font-size: 11px;
     }
 
@@ -201,9 +202,9 @@
     }
 
     .item {
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--item-bg);
         border: 1px solid transparent;
-        border-left: 2px solid #333;
+        border-left: 2px solid var(--border-color);
         padding: 12px 14px;
         font-size: 12px;
         display: flex;
@@ -214,19 +215,19 @@
     }
 
     .item:hover {
-        background: rgba(255, 255, 255, 0.04);
-        border-left-color: #666;
+        background: var(--item-bg-hover);
+        border-left-color: var(--text-secondary);
     }
 
     .item.new {
-        background: rgba(0, 240, 255, 0.03);
-        border-left-color: #00f0ff;
+        background: var(--diff-added-bg);
+        border-left-color: var(--accent-color);
         box-shadow: 0 0 10px rgba(0, 240, 255, 0.05);
     }
 
     .section.goals .item.new {
-        background: rgba(255, 0, 60, 0.03);
-        border-left-color: #ff003c;
+        background: var(--diff-removed-bg);
+        border-left-color: var(--accent-secondary);
         box-shadow: 0 0 10px rgba(255, 0, 60, 0.05);
     }
 
@@ -237,14 +238,14 @@
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #00f0ff;
-        box-shadow: 0 0 5px #00f0ff;
+        background: var(--accent-color);
+        box-shadow: 0 0 5px var(--accent-color);
         animation: pulse 2s infinite;
     }
 
     .section.goals .new-indicator {
-        background: #ff003c;
-        box-shadow: 0 0 5px #ff003c;
+        background: var(--accent-secondary);
+        box-shadow: 0 0 5px var(--accent-secondary);
     }
 
     @keyframes pulse {
@@ -263,31 +264,31 @@
     }
 
     .item-name {
-        color: #00f0ff;
+        color: var(--accent-color);
         font-weight: bold;
     }
     .item-sep {
-        color: #555;
+        color: var(--text-muted);
     }
     .item-type {
-        color: #ccc;
+        color: var(--text-secondary);
     }
 
     .goal-num {
-        color: #ff003c;
+        color: var(--accent-secondary);
         font-weight: bold;
     }
     .turnstile {
-        color: #666;
+        color: var(--text-muted);
         margin-right: 4px;
     }
     .goal-type {
-        color: #fff;
+        color: var(--text-primary);
         text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
     }
 
     .empty {
-        color: #444;
+        color: var(--text-muted);
         font-size: 11px;
         padding: 10px 0;
         text-transform: uppercase;
@@ -300,14 +301,14 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #555;
+        color: var(--text-muted);
         font-size: 12px;
         letter-spacing: 2px;
     }
 
     .terminal-cursor {
         font-size: 24px;
-        color: #00f0ff;
+        color: var(--accent-color);
         animation: blink 1s step-end infinite;
         margin-bottom: 16px;
     }
@@ -319,26 +320,26 @@
     }
 
     .success-box {
-        border: 1px solid #00f0ff;
-        background: rgba(0, 240, 255, 0.05);
+        border: 1px solid var(--accent-color);
+        background: var(--success-bg);
         padding: 24px;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 12px;
-        color: #00f0ff;
+        color: var(--accent-color);
         box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
     }
 
     .success-icon {
         font-size: 24px;
-        text-shadow: 0 0 10px #00f0ff;
+        text-shadow: 0 0 10px var(--accent-color);
     }
     .qed {
         font-weight: bold;
         font-size: 18px;
         letter-spacing: 4px;
         margin-top: 8px;
-        text-shadow: 0 0 5px #00f0ff;
+        text-shadow: 0 0 5px var(--accent-color);
     }
 </style>

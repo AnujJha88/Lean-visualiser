@@ -111,9 +111,9 @@
 
 <style>
     .timeline-container {
-        background: #050510;
+        background: var(--bg-timeline);
         padding: 20px;
-        border-top: 1px solid #333;
+        border-top: 1px solid var(--border-color);
         font-family: "JetBrains Mono", monospace;
     }
 
@@ -125,9 +125,9 @@
     }
 
     .control-btn {
-        background: #0a0a1a;
-        border: 1px solid #00f0ff;
-        color: #00f0ff;
+        background: var(--bg-app);
+        border: 1px solid var(--accent-color);
+        color: var(--accent-color);
         width: 36px;
         height: 36px;
         border-radius: 4px;
@@ -137,33 +137,33 @@
         justify-content: center;
         font-size: 14px;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 0 5px rgba(0, 240, 255, 0.1);
+        box-shadow: 0 0 5px rgba(var(--accent-color-rgb), 0.1);
     }
 
     .control-btn:hover:not(:disabled) {
-        background: rgba(0, 240, 255, 0.1);
-        box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
-        text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+        background: rgba(var(--accent-color-rgb), 0.1);
+        box-shadow: 0 0 12px rgba(var(--accent-color-rgb), 0.4);
+        text-shadow: 0 0 8px rgba(var(--accent-color-rgb), 0.8);
         transform: translateY(-1px);
     }
 
     .control-btn:disabled {
-        border-color: #333;
-        color: #555;
+        border-color: var(--border-color);
+        color: var(--text-muted);
         cursor: not-allowed;
         box-shadow: none;
     }
 
     .play-btn {
-        border-color: #ff003c;
-        color: #ff003c;
-        box-shadow: 0 0 5px rgba(255, 0, 60, 0.1);
+        border-color: var(--accent-secondary);
+        color: var(--accent-secondary);
+        box-shadow: 0 0 5px rgba(var(--accent-secondary-rgb), 0.1);
     }
 
     .play-btn:hover {
-        background: rgba(255, 0, 60, 0.1);
-        box-shadow: 0 0 12px rgba(255, 0, 60, 0.4);
-        text-shadow: 0 0 8px rgba(255, 0, 60, 0.8);
+        background: rgba(var(--accent-secondary-rgb), 0.1);
+        box-shadow: 0 0 12px rgba(var(--accent-secondary-rgb), 0.4);
+        text-shadow: 0 0 8px rgba(var(--accent-secondary-rgb), 0.8);
     }
 
     .step-counter {
@@ -175,17 +175,17 @@
     }
 
     .curr {
-        color: #fff;
+        color: var(--text-primary);
         font-weight: bold;
         font-size: 18px;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
 
     .sep {
-        color: #555;
+        color: var(--text-muted);
     }
     .total {
-        color: #888;
+        color: var(--text-secondary);
     }
 
     .timeline-track {
@@ -200,7 +200,7 @@
         left: 0;
         right: 0;
         height: 2px;
-        background: #222;
+        background: var(--border-color);
         z-index: 1;
     }
 
@@ -209,9 +209,9 @@
         top: 16px;
         left: 0;
         height: 2px;
-        background: #00f0ff;
+        background: var(--accent-color);
         z-index: 2;
-        box-shadow: 0 0 10px #00f0ff;
+        box-shadow: 0 0 10px var(--accent-color);
         transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -221,11 +221,11 @@
         top: -4px;
         width: 10px;
         height: 10px;
-        background: #00f0ff;
+        background: var(--accent-color);
         border-radius: 50%;
         box-shadow:
-            0 0 15px #00f0ff,
-            0 0 30px #00f0ff;
+            0 0 15px var(--accent-color),
+            0 0 30px var(--accent-color);
     }
 
     .steps-layer {
@@ -235,7 +235,7 @@
         right: 0;
         bottom: 0;
         z-index: 3;
-        pointer-events: none; /* Allow clicks to pass through empty space if needed, but buttons catch them */
+        pointer-events: none;
     }
 
     .step-marker {
@@ -250,7 +250,7 @@
         flex-direction: column;
         align-items: center;
         pointer-events: auto;
-        width: 40px; /* Hit area */
+        width: 40px;
     }
 
     .dot-wrapper {
@@ -263,37 +263,37 @@
     .step-dot {
         width: 8px;
         height: 8px;
-        background: #000;
-        border: 2px solid #555;
+        background: var(--bg-app);
+        border: 2px solid var(--text-muted);
         border-radius: 50%;
         transition: all 0.2s ease;
     }
 
     .step-marker:hover .step-dot {
-        border-color: #fff;
+        border-color: var(--text-primary);
         transform: scale(1.2);
     }
 
     .step-marker.passed .step-dot {
-        background: #00f0ff;
-        border-color: #00f0ff;
-        box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        box-shadow: 0 0 8px rgba(var(--accent-color-rgb), 0.4);
     }
 
     .step-marker.active .step-dot {
         width: 14px;
         height: 14px;
-        background: #fff;
-        border-color: #fff;
+        background: var(--text-primary);
+        border-color: var(--text-primary);
         box-shadow:
-            0 0 15px #fff,
-            0 0 30px #00f0ff;
+            0 0 15px var(--text-primary),
+            0 0 30px var(--accent-color);
     }
 
     .step-label {
         margin-top: 4px;
         font-size: 10px;
-        color: #555;
+        color: var(--text-muted);
         opacity: 0;
         transform: translateY(-5px);
         transition: all 0.2s ease;
@@ -307,11 +307,11 @@
     .step-marker.active .step-label {
         opacity: 1;
         transform: translateY(0);
-        color: #fff;
+        color: var(--text-primary);
     }
 
     .step-marker.active .step-label {
-        color: #00f0ff;
-        text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+        color: var(--accent-color);
+        text-shadow: 0 0 8px rgba(var(--accent-color-rgb), 0.6);
     }
 </style>
