@@ -6,6 +6,9 @@
   import { defaultCode, exampleProofs } from "./lib/examples";
   import type { ProofTimeline, TacticStep } from "./lib/types";
 
+  import ProofGraph from "./components/ProofGraph.svelte";
+  import ExampleSelector from "./components/ExampleSelector.svelte";
+
   let code = defaultCode;
   let timeline: ProofTimeline | null = null;
   let currentStepIndex = 0;
@@ -15,6 +18,7 @@
   let playInterval: ReturnType<typeof setInterval> | null = null;
   let fileInput: HTMLInputElement;
   let isLightMode = false;
+  let viewMode: "timeline" | "graph" = "timeline";
 
   let editorComponent: Editor;
 
@@ -119,6 +123,14 @@
       document.body.classList.remove("light-mode");
     }
   }
+
+  function handleExampleSelect(event: CustomEvent<{ code: string }>) {
+    code = event.detail.code;
+    editorComponent?.setValue(code);
+    timeline = null;
+    error = null;
+    currentStepIndex = 0;
+  }
 </script>
 
 <div class="app-container">
@@ -162,26 +174,7 @@
             <span class="icon">⏏</span> IMPORT
           </button>
 
-          <div class="examples-dropdown">
-            <span class="dropdown-label">SYSTEM_LOAD:</span>
-            <div class="button-group">
-              <button class="example-btn" on:click={() => loadExample("simple")}
-                >BASIC</button
-              >
-              <button
-                class="example-btn"
-                on:click={() => loadExample("logicChain")}>LOGIC_CHAIN</button
-              >
-              <button
-                class="example-btn"
-                on:click={() => loadExample("algebrav")}>ALGEBRA</button
-              >
-              <button
-                class="example-btn"
-                on:click={() => loadExample("distrib")}>DISTRIB</button
-              >
-            </div>
-          </div>
+          <ExampleSelector on:select={handleExampleSelect} />
 
           <button
             class="analyze-btn"
@@ -244,7 +237,7 @@
       </div>
     </main>
 
-    <!-- Timeline -->
+    <!-- Timeline / Graph Area -->
     <div class="timeline-panel">
       {#if error}
         <div class="error-banner">
@@ -256,15 +249,40 @@
         </div>
       {/if}
 
+      <div class="view-controls">
+        <button
+          class="view-btn"
+          class:active={viewMode === "timeline"}
+          on:click={() => (viewMode = "timeline")}
+        >
+          TIMELINE
+        </button>
+        <button
+          class="view-btn"
+          class:active={viewMode === "graph"}
+          on:click={() => (viewMode = "graph")}
+        >
+          GRAPH
+        </button>
+      </div>
+
       {#if timeline}
-        <Timeline
-          steps={timeline.steps}
-          {currentStepIndex}
-          {isPlaying}
-          on:select={handleStepSelect}
-          on:play={handlePlay}
-          on:pause={handlePause}
-        />
+        {#if viewMode === "timeline"}
+          <Timeline
+            steps={timeline.steps}
+            {currentStepIndex}
+            {isPlaying}
+            on:select={handleStepSelect}
+            on:play={handlePlay}
+            on:pause={handlePause}
+          />
+        {:else}
+          <ProofGraph
+            {timeline}
+            {currentStepIndex}
+            on:select={handleStepSelect}
+          />
+        {/if}
       {:else if !error}
         <div class="timeline-placeholder">
           <div class="placeholder-content">
@@ -446,46 +464,6 @@
     color: var(--accent-color);
   }
 
-  .examples-dropdown {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .dropdown-label {
-    font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    font-weight: bold;
-  }
-
-  .button-group {
-    display: flex;
-    gap: 2px;
-    background: var(--bg-panel);
-    padding: 2px;
-    border: 1px solid var(--border-color);
-  }
-
-  .example-btn {
-    background: var(--bg-app);
-    border: none;
-    color: var(--text-muted);
-    padding: 6px 16px;
-    font-size: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-    font-weight: bold;
-    letter-spacing: 1px;
-  }
-
-  .example-btn:hover {
-    background: var(--item-bg-hover);
-    color: var(--accent-color);
-    text-shadow: 0 0 5px rgba(var(--accent-color-rgb), 0.5);
-  }
-
   .analyze-btn {
     background: transparent;
     border: 1px solid var(--accent-color);
@@ -646,13 +624,49 @@
     overflow: auto;
   }
 
-  /* Timeline panel */
   .timeline-panel {
     background: var(--bg-timeline);
     border-top: 1px solid var(--border-color);
     flex-shrink: 0;
     position: relative;
     z-index: 5;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .view-controls {
+    display: flex;
+    gap: 1px;
+    background: var(--border-color);
+    padding-bottom: 1px;
+    margin-bottom: -1px; /* overlap border */
+    position: absolute;
+    top: -24px;
+    right: 20px;
+    z-index: 10;
+  }
+
+  .view-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 10px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .view-btn:hover {
+    color: var(--text-primary);
+    background: var(--item-bg-hover);
+  }
+
+  .view-btn.active {
+    background: var(--bg-timeline);
+    color: var(--accent-color);
+    border-bottom-color: var(--bg-timeline);
   }
 
   .timeline-placeholder {

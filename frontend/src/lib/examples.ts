@@ -10,12 +10,12 @@ export const defaultCode = `theorem and_comm {p q : Prop} : p ∧ q ↔ q ∧ p 
     · exact h.left`;
 
 export const exampleProofs = {
-    // Simple: 2 steps
-    simple: `theorem id_map {α : Type} (x : α) : x = x := by
+  // Simple: 2 steps
+  simple: `theorem id_map {α : Type} (x : α) : x = x := by
   rfl`,
 
-    // Logic: ~8 steps
-    andComm: `theorem and_comm {p q : Prop} : p ∧ q ↔ q ∧ p := by
+  // Logic: ~8 steps
+  andComm: `theorem and_comm {p q : Prop} : p ∧ q ↔ q ∧ p := by
   apply Iff.intro
   · intro h
     constructor
@@ -26,9 +26,9 @@ export const exampleProofs = {
     · exact h.right
     · exact h.left`,
 
-    // Induction: ~12 steps with simp usually, but here we can make it verbose?
-    // Use a standard mathlib-style one but simplified
-    induction: `theorem sum_n (n : Nat) : 2 * (List.range (n + 1)).sum = n * (n + 1) := by
+  // Induction: ~12 steps with simp usually, but here we can make it verbose?
+  // Use a standard mathlib-style one but simplified
+  induction: `theorem sum_n (n : Nat) : 2 * (List.range (n + 1)).sum = n * (n + 1) := by
   induction n with
   | zero =>
     simp
@@ -43,8 +43,8 @@ export const exampleProofs = {
     -- (n + 1) * (n + 2)
     rfl`,
 
-    // Logic Chain: 12 steps
-    logicChain: `theorem logic_chain (p q r s t u : Prop) : 
+  // Logic Chain: 12 steps
+  logicChain: `theorem logic_chain (p q r s t u : Prop) : 
   (p → q) → (q → r) → (r → s) → (s → t) → (t → u) → p → u := by
   intro h1
   intro h2
@@ -59,8 +59,8 @@ export const exampleProofs = {
   apply h1
   exact hp`,
 
-    // Algebra Verbose: ~15 steps
-    algebrav: `theorem expansion (a b : Nat) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
+  // Algebra Verbose: ~15 steps
+  algebrav: `theorem expansion (a b : Nat) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   rw [Nat.mul_add]
   rw [Nat.add_mul]
   rw [Nat.add_mul]
@@ -74,8 +74,8 @@ export const exampleProofs = {
   rw [Nat.add_mul]
   rw [Nat.one_mul]`,
 
-    // Distributivity: ~14 steps
-    distrib: `theorem dist_exists {α : Type} (p q : α → Prop) : 
+  // Distributivity: ~14 steps
+  distrib: `theorem dist_exists {α : Type} (p q : α → Prop) : 
   (∃ x, p x ∨ q x) ↔ (∃ x, p x) ∨ (∃ x, q x) := by
   apply Iff.intro
   · intro h
@@ -101,5 +101,62 @@ export const exampleProofs = {
       | intro x qx =>
         exists x
         apply Or.inr
-        exact qx`
+        exact qx`,
+
+  // Long Calculation: ~40 lines
+  sumAnalysis: `theorem sum_analysis (n : Nat) : 
+  (List.range n).sum * 2 = n * (n - 1) := by
+  induction n with
+  | zero =>
+    simp
+  | succ n ih =>
+    simp
+    rw [Nat.mul_add]
+    rw [ih]
+    -- n * (n - 1) + 2 * n
+    cases n with
+    | zero => 
+      simp
+    | succ m =>
+      -- (m + 1) * m + 2 * (m + 1)
+      -- Target: (m + 1) * (m + 1 + 1 - 1)
+      -- Target: (m + 1) * (m + 1)
+      simp
+      rw [Nat.mul_add]
+      rw [Nat.add_mul]
+      rw [Nat.one_mul]
+      rw [Nat.mul_one]
+      rw [Nat.add_assoc]
+      apply congrArg
+      rw [Nat.two_mul]
+      rw [Nat.add_mul]
+      rw [Nat.one_mul]
+      rw [Nat.add_comm m 1]
+      rfl`,
+
+  // List Reverse: ~50 lines
+  listReverse: `theorem reverse_reverse {α : Type} (l : List α) : 
+  l.reverse.reverse = l := by
+  induction l with
+  | nil =>
+    rfl
+  | cons x xs ih =>
+    simp
+    -- Target: (xs.reverse ++ [x]).reverse = x :: xs
+    -- We need a lemma: reverse_append
+    have H : ∀ (ys zs : List α), (ys ++ zs).reverse = zs.reverse ++ ys.reverse := by
+      intro ys
+      induction ys with
+      | nil =>
+        intro zs
+        simp
+      | cons y ys ih_app =>
+        intro zs
+        simp
+        rw [ih_app]
+        simp
+    rw [H]
+    simp
+    rw [ih]
+    rfl`
 };
