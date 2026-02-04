@@ -35,28 +35,38 @@
         const w = container.clientWidth || width;
         const h = container.clientHeight || height;
 
+        // Create the Zoom Behavior first
+        const zoom = d3.zoom().on("zoom", (event) => {
+            // We need to select the g here because it might be created after the behavior
+            d3.select(container).select("g").attr("transform", event.transform);
+        });
+
+        // Create SVG and attach zoom
         svg = d3
             .select(container)
             .append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
-            .attr("viewBox", [
-                -margin.left,
-                -margin.top,
-                w + margin.right,
-                h + margin.bottom,
-            ])
-            .call(
-                d3.zoom().on("zoom", (event) => {
-                    g.attr("transform", event.transform);
-                }),
-            )
-            .append("g");
+            .attr("viewBox", [0, 0, w, h])
+            .call(zoom as any);
 
+        // Create the group for content *before* triggering any zoom transforms
         const g = svg.append("g");
 
-        // Tree Layout
-        const treeLayout = d3.tree<GraphNode>().size([h - 100, w - 200]);
+        // Initial translation to center vertically and padding left
+        // With nodeSize, root is at (0,0). x is vertical, y is horizontal.
+        const initialTransform = d3.zoomIdentity
+            .translate(margin.left, h / 2)
+            .scale(1);
+
+        // Apply the transform (this triggers the zoom event synchronously)
+        svg.call(zoom.transform as any, initialTransform);
+
+        // Continue using g for drawing
+        // const g = svg.select("g"); // Logic above now ensures g exists
+        // Since we rotate x/y for horizontal layout:
+        // nodeSize([height-per-node, width-per-level])
+        const treeLayout = d3.tree<GraphNode>().nodeSize([40, 200]);
         const hierarchy = d3.hierarchy(root);
         const treeData = treeLayout(hierarchy);
 
@@ -100,13 +110,21 @@
             .style("stroke", "var(--accent-color)")
             .style("stroke-width", "2px");
 
-        // Node Labels
+        // Add Tooltip for full text
+        nodes.append("title").text((d: any) => d.data.label);
+
+        // Node Labels (Truncated)
         nodes
             .append("text")
             .attr("dy", ".35em")
             .attr("x", (d: any) => (d.children ? -13 : 13))
             .style("text-anchor", (d: any) => (d.children ? "end" : "start"))
-            .text((d: any) => d.data.label)
+            .text((d: any) => {
+                const label = d.data.label;
+                return label.length > 20
+                    ? label.substring(0, 20) + "..."
+                    : label;
+            })
             .style("fill", "var(--text-primary)")
             .style("font-size", "12px")
             .style("font-family", "JetBrains Mono");
